@@ -13,6 +13,38 @@ restService.use(
 
 restService.use(bodyParser.json());
 
+restService.post("/eSeva", function(req, res) {
+  var speech =
+    req.body.queryResult &&
+    req.body.queryResult.parameters &&
+    req.body.queryResult.parameters.sevaText
+      ? req.body.queryResult.parameters.sevaText
+      : "Seems like some problem. Speak again.";
+  
+  var speechResponse = {
+    google: {
+      expectUserResponse: true,
+      richResponse: {
+        items: [
+          {
+            simpleResponse: {
+              textToSpeech: speech
+            }
+          }
+        ]
+      }
+    }
+  };
+  
+  return res.json({
+    payload: speechResponse,
+    //data: speechResponse,
+    fulfillmentText: speech,
+    speech: speech,
+    displayText: speech,
+    source: "webhook-echo-sample"
+  });
+});
 restService.post("/echo", function(req, res) {
   var speech =
     req.body.queryResult &&
@@ -45,7 +77,6 @@ restService.post("/echo", function(req, res) {
     source: "webhook-echo-sample"
   });
 });
-
 restService.post("/audio", function(req, res) {
   var speech = "";
   switch (req.body.result.parameters.AudioSample.toLowerCase()) {
